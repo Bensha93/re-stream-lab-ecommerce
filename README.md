@@ -6,7 +6,7 @@ This project implements a real-time streaming data pipeline that processes backe
 
 ## Architecture
 
-```
+
 flowchart TD
 
     A[Pub/Sub Topic\nbackend-events-topic]
@@ -18,7 +18,6 @@ flowchart TD
     B --> C
     B --> D
 
-```
 
 ## Technical Implementation
 
