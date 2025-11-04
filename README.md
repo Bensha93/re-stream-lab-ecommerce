@@ -7,16 +7,13 @@ This project implements a real-time streaming data pipeline that processes backe
 ## Architecture
 
 flowchart TD
+    A["Pub/Sub Topic backend-events-topic"] --> B["Dataflow Pipeline Apache Beam Python"]
+    B --> C["BigQuery Tables"] & D["GCS JSON Files"]
 
-    A[Pub/Sub Topic backend-events-topic]
-    B[Dataflow Pipeline Apache Beam Python]
-    C[BigQuery Tables]
-    D[GCS JSON Files]
-
-    A --> B
-    B --> C
-    B --> D
-
+    style A fill:#FF6D00
+    style B fill:#FFD600
+    style C fill:#00C853
+    style D fill:#00C853
 
 ## Technical Implementation
 
