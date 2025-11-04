@@ -49,13 +49,13 @@ I designed a normalized BigQuery schema with three separate tables to optimize q
 - **Separate Tables**: Each event type has its own table for better schema management and query efficiency
 - **Nested Structures**: Used STRUCT and ARRAY types to maintain data relationships without additional joins
 
-![BigQuery Schema - Inventory Table](assest\Big query - inventory.png)
+![BigQuery Schema - Inventory Table](assest/Big query - inventory.png)
 *Figure 1: Inventory table schema showing partitioning and field structure*
 
-![BigQuery Schema - Orders Table](assest\big query - Orders.png)
+![BigQuery Schema - Orders Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/big%20query%20-%20Orders.png)
 *Figure 2: Orders table with nested items and shipping address structures*
 
-![BigQuery Schema - User Activity Table](assest\big query - User_activity.png)
+![BigQuery Schema - User Activity Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/big%20query%20-%20User_activity.png)
 *Figure 3: User activity table with metadata nested structure*
 
 ### Task 2: Streaming Pipeline
@@ -87,7 +87,7 @@ gs://re-ecommerce-bucket/output/
     └── 2025/11/04/...
 ```
 
-![Dataflow Pipeline Graph](assest\Dataflow -Job run Chart.png)
+![Dataflow Pipeline Graph](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/Dataflow%20-Job%20run%20Chart.png)
 *Figure 4: Dataflow execution graph showing parallel processing paths*
 
 ## Project Setup & Deployment
@@ -156,7 +156,7 @@ python dataflow_pipeline.py
 
 The pipeline successfully processed all three event types as evidenced by:
 
-![BigQuery Query Results](screenshots/bigquery-query-results.png)
+![BigQuery Query Results](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/big%20query%201%20-%20Select.png)
 *Figure 5: Sample queries showing data in all three tables*
 
 **Key Metrics:**
@@ -165,12 +165,12 @@ The pipeline successfully processed all three event types as evidenced by:
 - ✅ Average latency < 2 seconds
 - ✅ Successful writes to both BigQuery and GCS
 
-![GCS Bucket Contents](screenshots/gcs-bucket-structure.png)
+![GCS Bucket Contents](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/Bucket%20-%20Staging%20.png)
 *Figure 6: GCS bucket showing organized event files by type and timestamp*
 
 ### Pipeline Performance
 
-![Dataflow Job Status](screenshots/dataflow-job-running.png)
+![Dataflow Job Status](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/Dataflow%20-%20Status%20Job%20run%20.png)
 *Figure 7: Dataflow job running successfully with 1 hour+ uptime*
 
 The Dataflow job has been running stably for over an hour, processing events in real-time with:
@@ -179,14 +179,14 @@ The Dataflow job has been running stably for over an hour, processing events in 
 - **Workers**: Auto-scaling (1-100)
 - **SDK**: Apache Beam Python 3.10
 
-![Pub/Sub Monitoring](screenshots/pubsub-subscription-metrics.png)
+![Pub/Sub Monitoring](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/Pub%20-%20sub%20-%20Dashboard%200.png)
 *Figure 8: Pub/Sub subscription showing message delivery metrics*
 
 ### Test Event Publishing
 
 Created a test script (`test_publish.py`) to validate the pipeline with sample events:
 
-![Test Events Published](assest\Vscode - Dataflow - test - publish.png)
+![Test Events Published](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/Vscode%20-%20Dataflow%20-%20test%20-%20publish.png)
 *Figure 9: Terminal output showing successful event publishing*
 
 Successfully published:
