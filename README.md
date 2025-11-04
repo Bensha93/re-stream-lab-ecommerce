@@ -49,7 +49,7 @@ I designed a normalized BigQuery schema with three separate tables to optimize q
 - **Separate Tables**: Each event type has its own table for better schema management and query efficiency
 - **Nested Structures**: Used STRUCT and ARRAY types to maintain data relationships without additional joins
 
-![BigQuery Schema - Inventory Table](assest/Big query - inventory.png)
+![BigQuery Schema - Inventory Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/6bed4f3850db0206106f800f35fa95e86e19cf7e/assest/Big%20query%20-%20inventory.png)
 *Figure 1: Inventory table schema showing partitioning and field structure*
 
 ![BigQuery Schema - Orders Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/big%20query%20-%20Orders.png)
@@ -57,6 +57,15 @@ I designed a normalized BigQuery schema with three separate tables to optimize q
 
 ![BigQuery Schema - User Activity Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/big%20query%20-%20User_activity.png)
 *Figure 3: User activity table with metadata nested structure*
+
+![BigQuery SQL - Order](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/6bed4f3850db0206106f800f35fa95e86e19cf7e/assest/big%20query%201%20-%20Select.png)
+*Order Query Select*
+
+![BigQuery SQL - Inventory](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/a5e9a40e2a78636658ebc1ddcf738c6b6bc84107/assest/Bigquery%20-%20Inventory.png)
+*Inventory Query Select*
+
+![BigQuery SQL - User Activity](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/a5e9a40e2a78636658ebc1ddcf738c6b6bc84107/assest/Big%20Query%20Event%20atctivity%20.png)
+*User Activity Query Select*
 
 ### Task 2: Streaming Pipeline
 
