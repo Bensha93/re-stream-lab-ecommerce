@@ -5,6 +5,7 @@
 This project implements a real-time streaming data pipeline that processes backend events from Pub/Sub, transforms them using Apache Beam on Google Cloud Dataflow, and stores the results in both BigQuery and Google Cloud Storage. The pipeline handles three types of events: orders, inventory changes, and user activities.
 
 ## Architecture
+
 flowchart TD
 
     A[Pub/Sub Topic backend-events-topic]
@@ -15,6 +16,7 @@ flowchart TD
     A --> B
     B --> C
     B --> D
+
 
 ## Technical Implementation
 
