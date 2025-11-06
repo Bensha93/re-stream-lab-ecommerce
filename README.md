@@ -89,20 +89,157 @@ I designed a normalized BigQuery schema with three separate tables to optimize q
 - **Separate Tables**: Each event type has its own table for better schema management and query efficiency
 - **Nested Structures**: Used STRUCT and ARRAY types to maintain data relationships without additional joins
 
+```
+-- Create the dataset (if not exists)
+CREATE SCHEMA IF NOT EXISTS `re-stream-lab-ecommerce.backend_events`
+OPTIONS(
+  location="US",
+  description="Backend event data for e-commerce platform"
+);
+```
+
+```
+CREATE OR REPLACE TABLE `re-stream-lab-ecommerce.backend_events.inventory` (
+  -- Primary identification
+  event_type STRING NOT NULL,
+  inventory_id STRING NOT NULL,
+  
+  -- Inventory tracking
+  product_id STRING NOT NULL,
+  warehouse_id STRING NOT NULL,
+  
+  -- Transaction details
+  quantity_change INT64 NOT NULL,
+  reason STRING NOT NULL,
+  
+  -- Timing
+  timestamp TIMESTAMP NOT NULL,
+  
+  -- Audit trail
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+)
+PARTITION BY DATE(timestamp)
+CLUSTER BY warehouse_id, product_id, reason
+OPTIONS(
+  description="Inventory change events tracking stock movements across warehouses"
+);
+```
+
 ![BigQuery Schema - Inventory Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/6bed4f3850db0206106f800f35fa95e86e19cf7e/assest/Big%20query%20-%20inventory.png)
 *Figure 1: Inventory table schema showing partitioning and field structure*
+
+```
+CREATE OR REPLACE TABLE `re-stream-lab-ecommerce.backend_events.orders` (
+  -- Primary identification
+  event_type STRING NOT NULL,
+  order_id STRING NOT NULL,
+  
+  -- Customer information
+  customer_id STRING NOT NULL,
+  
+  -- Order details
+  order_date TIMESTAMP NOT NULL,
+  status STRING NOT NULL,
+  
+  -- Line items (products in the order)
+  items ARRAY<STRUCT<
+    product_id STRING,
+    product_name STRING,
+    quantity INT64,
+    price FLOAT64
+  >>,
+  
+  -- Shipping details
+  shipping_address STRUCT<
+    street STRING,
+    city STRING,
+    country STRING
+  >,
+  
+  -- Financial
+  total_amount FLOAT64,
+  
+  -- Audit trail
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+)
+PARTITION BY DATE(order_date)
+CLUSTER BY customer_id, status
+OPTIONS(
+  description="E-commerce order events with customer purchases and shipping details"
+);
+```
 
 ![BigQuery Schema - Orders Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/big%20query%20-%20Orders.png)
 *Figure 2: Orders table with nested items and shipping address structures*
 
+```
+CREATE OR REPLACE TABLE `re-stream-lab-ecommerce.backend_events.user_activity` (
+  -- Primary identification
+  event_type STRING NOT NULL,
+  user_id STRING NOT NULL,
+  
+  -- Activity details
+  activity_type STRING NOT NULL,
+  
+  -- Technical metadata
+  ip_address STRING,
+  user_agent STRING,
+  
+  -- Timing
+  timestamp TIMESTAMP NOT NULL,
+  
+  -- Session context
+  metadata STRUCT<
+    session_id STRING,
+    platform STRING
+  >,
+  
+  -- Audit trail
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+)
+PARTITION BY DATE(timestamp)
+CLUSTER BY user_id, activity_type
+OPTIONS(
+  description="User activity events tracking login, product views, cart actions, and user behavior"
+);
+```
+
 ![BigQuery Schema - User Activity Table](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/d8ab5b0a6a3e7d494e4a0143a4be2dca321ef778/assest/big%20query%20-%20User_activity.png)
 *Figure 3: User activity table with metadata nested structure*
+
+```
+-- Get orders by customer
+SELECT * FROM `re-stream-lab-ecommerce.backend_events.orders`
+WHERE customer_id = 'customer-uuid'
+AND DATE(order_date) >= '2025-01-01';
+```
 
 ![BigQuery SQL - Order](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/6bed4f3850db0206106f800f35fa95e86e19cf7e/assest/big%20query%201%20-%20Select.png)
 *Order Query Select*
 
+```
+-- Current stock by product and warehouse
+SELECT 
+  product_id,
+  warehouse_id,
+  SUM(quantity_change) as current_stock
+FROM `re-stream-lab-ecommerce.backend_events.inventory`
+GROUP BY product_id, warehouse_id;
+```
+
 ![BigQuery SQL - Inventory](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/a5e9a40e2a78636658ebc1ddcf738c6b6bc84107/assest/Bigquery%20-%20Inventory.png)
 *Inventory Query Select*
+
+```
+-- Activity funnel analysis
+SELECT 
+  activity_type,
+  metadata.platform,
+  COUNT(DISTINCT user_id) as unique_users
+FROM `re-stream-lab-ecommerce.backend_events.user_activity`
+WHERE DATE(timestamp) = CURRENT_DATE()
+GROUP BY activity_type, metadata.platform;
+```
 
 ![BigQuery SQL - User Activity](https://github.com/Bensha93/re-stream-lab-ecommerce/blob/a5e9a40e2a78636658ebc1ddcf738c6b6bc84107/assest/Big%20Query%20Event%20atctivity%20.png)
 *User Activity Query Select*
