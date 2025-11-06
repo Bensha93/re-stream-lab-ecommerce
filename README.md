@@ -7,10 +7,53 @@ This project implements a real-time streaming data pipeline that processes backe
 ## Architecture
 
 ```mermaid
-flowchart TD
-    A["Pub/Sub Topic<br>backend-events-topic"] --> B["Dataflow Pipeline<br>Apache Beam Python"]
-    B --> C["BigQuery Tables"]
-    B --> D["GCS JSON Files"]
+graph LR
+    subgraph "Pub/Sub Layer"
+        PS[("Pub/Sub Topic<br/>backend-events-topic")]
+        SUB["Subscription<br/>backend-events-topic-sub"]
+        PS --> SUB
+    end
+
+    subgraph "Streaming Pipeline - Dataflow"
+        SUB --> READ["Read Messages"]
+        READ --> PARSE["Parse JSON"]
+        PARSE --> ROUTE{"Route by<br/>event_type"}
+        
+        ROUTE -->|"order"| F1["Filter Orders"]
+        ROUTE -->|"inventory"| F2["Filter Inventory"]
+        ROUTE -->|"user_activity"| F3["Filter Activity"]
+        
+        PARSE --> GCS_WRITE["Write to GCS<br/>Hierarchical"]
+    end
+
+    subgraph "BigQuery - backend_events Dataset"
+        F1 --> ORDERS[("📊 ORDERS<br/>───────<br/>Partition: order_date<br/>Cluster: customer_id<br/>───────<br/>order_id PK<br/>customer_id FK<br/>items ARRAY<br/>shipping_address STRUCT<br/>total_amount")]
+        
+        F2 --> INVENTORY[("📦 INVENTORY<br/>───────<br/>Partition: timestamp<br/>Cluster: warehouse_id<br/>───────<br/>inventory_id PK<br/>product_id FK<br/>quantity_change<br/>reason")]
+        
+        F3 --> ACTIVITY[("👤 USER_ACTIVITY<br/>───────<br/>Partition: timestamp<br/>Cluster: user_id<br/>───────<br/>user_id FK<br/>activity_type<br/>metadata STRUCT")]
+        
+        ORDERS -.->|"customer_id"| ACTIVITY
+        INVENTORY -.->|"product_id"| ORDERS
+        ACTIVITY -.->|"user behavior"| ORDERS
+    end
+
+    subgraph "GCS - re_ecommerce_bucket"
+        GCS_WRITE --> GCS_ORDER["📁 output/order/<br/>YYYY/MM/DD/HH/mm/"]
+        GCS_WRITE --> GCS_INV["📁 output/inventory/<br/>YYYY/MM/DD/HH/mm/"]
+        GCS_WRITE --> GCS_ACT["📁 output/user_activity/<br/>YYYY/MM/DD/HH/mm/"]
+    end
+
+    style PS fill:#4285f4,stroke:#333,stroke-width:2px,color:#fff
+    style SUB fill:#4285f4,stroke:#333,stroke-width:2px,color:#fff
+    style ORDERS fill:#34a853,stroke:#333,stroke-width:2px,color:#fff
+    style INVENTORY fill:#fbbc04,stroke:#333,stroke-width:2px,color:#000
+    style ACTIVITY fill:#ea4335,stroke:#333,stroke-width:2px,color:#fff
+    style GCS_ORDER fill:#aecbfa,stroke:#333,stroke-width:2px
+    style GCS_INV fill:#aecbfa,stroke:#333,stroke-width:2px
+    style GCS_ACT fill:#aecbfa,stroke:#333,stroke-width:2px
+    style ROUTE fill:#9aa0a6,stroke:#333,stroke-width:3px
+    style GCS_WRITE fill:#9aa0a6,stroke:#333,stroke-width:2px
 ```
 
 
